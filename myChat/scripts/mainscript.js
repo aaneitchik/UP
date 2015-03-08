@@ -33,9 +33,14 @@ function printMessage(text) {
 function enterName() {
 	if (event.keyCode == 13) {
 		myusername = document.getElementById('username').value;
+		document.getElementById('username').blur();
 		return false;
 	}
 	return true;
+}
+
+function changeUsername() {
+	myusername = document.getElementById('username').value;
 }
 
 function clearUsername() {
