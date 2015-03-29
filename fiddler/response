@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Date: Sun, 29 Mar 2015 11:44:51 GMT
+Access-control-allow-origin: *
+Content-length: 80
+
+{"messages":["hi!","hello!","how you doing?","fine. and you?"],"token":"TN11EN"}
