@@ -19,18 +19,19 @@ public class MessageExchange {
         return (Integer.valueOf(token.substring(2, token.length() - 2)) - 11) / 8;
     }
 
-    public String getServerResponse(List<Message> messages) {
+    public String getServerResponse(List<Message> messages, int size) {
     	 List<JSONObject> messageList = new ArrayList<JSONObject>();
          for (Message m: messages) {
              JSONObject jsonObject = new JSONObject();
              jsonObject.put("id", m.getId());
              jsonObject.put("userName", m.getUserName());
              jsonObject.put("message", m.getMessage());
+             jsonObject.put("state", m.getState());
              messageList.add(jsonObject);
          }
          JSONObject jsonObject = new JSONObject();
          jsonObject.put("messages", messageList);
-         jsonObject.put("token", getToken(messageList.size()));
+         jsonObject.put("token", getToken(size));
          return jsonObject.toJSONString();
     }
 
@@ -39,6 +40,7 @@ public class MessageExchange {
         jsonObject.put("id", m.getId());
         jsonObject.put("userName", m.getUserName());
         jsonObject.put("message", m.getMessage());
+        jsonObject.put("state", m.getState());
         return jsonObject.toJSONString();
     }
    

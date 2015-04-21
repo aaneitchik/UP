@@ -91,7 +91,9 @@ public class Server implements HttpHandler {
         	doDel(httpExchange);
         } else if ("PUT".equals(httpExchange.getRequestMethod())) {
         	doPut(httpExchange);
-        } else {
+        } else if ("OPTIONS".equals(httpExchange.getRequestMethod())) {
+        	response = "";
+        }  else {
             response = "Unsupported http method: " + httpExchange.getRequestMethod();
         }
         sendResponse(httpExchange, response);
@@ -104,7 +106,7 @@ public class Server implements HttpHandler {
             String token = map.get("token");
             if (token != null && !"".equals(token)) {
                 int index = messageExchange.getIndex(token);
-                return messageExchange.getServerResponse(history.subList(index, history.size()));
+                return messageExchange.getServerResponse(history.subList(index, history.size()), history.size());
             } else {
                 return "Token query parameter is absent in url: " + query;
             }
@@ -144,7 +146,8 @@ public class Server implements HttpHandler {
                 			myPrint("This message can't be edited, it was deleted");
                 			return;    
                 		}
-                		history.get(ind).setMessage(message.getMessage());     
+                		history.get(ind).setMessage(message.getMessage());
+                		history.get(ind).setState("modified");
                 		myPrint("Message was successfully edited");
                 	} catch (ParseException e) {
                 		System.err.println("Invalid user message: " + httpExchange.getRequestBody() + " " + e.getMessage());
@@ -169,10 +172,8 @@ public class Server implements HttpHandler {
                 	++ind;
                 }
                 if(ind < history.size() ) {
-                	//history.remove(index - 1);
-                	//history.add(new Message(Integer.toString(index + 1), "", ""));
                 	history.remove(ind);
-                	history.add(new Message(Integer.toString(index), "", ""));
+                	history.add(new Message(Integer.toString(index), "", "", "modified"));
                 	myPrint("Message was successfully deleted");
                 } else {
                 	myPrint("Message ID is out of bounds");
@@ -186,6 +187,13 @@ public class Server implements HttpHandler {
              byte[] bytes = response.getBytes();
              Headers headers = httpExchange.getResponseHeaders();
              headers.add("Access-Control-Allow-Origin","*");
+             if("OPTIONS".equals(httpExchange.getRequestMethod())) {
+                 headers.add("Access-Control-Allow-Methods","PUT, DELETE, POST, GET, OPTIONS");
+             }
+             //if("ABC".equals(httpExchange.getRequestMethod())) {
+             //    headers.add("Access-Control-Allow-Methods","PUT, DELETE, POST, GET, ABC");
+             //}
+             
              httpExchange.sendResponseHeaders(200, bytes.length);
              OutputStream os = httpExchange.getResponseBody();
              os.write( bytes);
